@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<!-- data.js must be loaded before this file -->
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Lịch Thanh Toán – Vinhomes Sài Gòn Park</title>
+    <meta name="description"
+        content="Ứng dụng tính toán lịch thanh toán và chiết khấu khi mua nhà phố tại dự án Vinhomes Sài Gòn Park">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="data.js"></script>
+
+    <style>
+        :root {
+            --primary: #1a3a6b;
+            --primary-light: #2454a0;
+            --accent: #c8960c;
+            --accent-light: #e8b830;
+            --bg-dark: #0d1b2e;
+            --bg-card: #132035;
+            --bg-card2: #1a2d47;
+            --text-main: #e8edf5;
+            --text-muted: #8da0ba;
+            --border: #243a58;
+            --success: #27ae60;
+            --radius: 14px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0d1b2e 0%, #0a1628 50%, #061020 100%);
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .app-header {
+            background: linear-gradient(90deg, #0d1b2e, #1a3a6b, #0d1b2e);
+            border-bottom: 2px solid var(--accent);
+            padding: 18px 0 14px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .app-header .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: #0d1b2e;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+        }
+
+        .app-header h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-header .subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .nav-tabs-custom {
+            border: none;
+            gap: 8px;
+            padding: 18px 0 0;
+        }
+
+        .nav-tabs-custom .nav-link {
+            background: var(--bg-card2);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 10px 10px 0 0;
+            padding: 10px 24px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-tabs-custom .nav-link:hover {
+            color: var(--text-main);
+            border-color: var(--primary-light);
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            background: var(--bg-card);
+            color: var(--accent-light);
+            border-color: var(--accent);
+            border-bottom-color: var(--bg-card);
+            font-weight: 700;
+        }
+
+        .card-custom {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-custom .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-light);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-control,
+        .form-select {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: var(--bg-dark);
+            border-color: var(--accent);
+            color: var(--text-main);
+            box-shadow: 0 0 0 3px rgba(200, 150, 12, 0.15);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .form-select option {
+            background: var(--bg-dark);
+        }
+
+        .form-check-input {
+            background-color: var(--bg-dark);
+            border-color: var(--border);
+            width: 18px;
+            height: 18px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .form-check-label {
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: #0d1b2e;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 36px;
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
+            box-shadow: 0 4px 18px rgba(200, 150, 12, 0.35);
+            width: 100%;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(200, 150, 12, 0.5);
+            color: #0d1b2e;
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.87rem;
+        }
+
+        .result-table thead th {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            color: var(--accent-light);
+            padding: 12px 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
+        }
+
+        .result-table thead th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .result-table thead th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .result-table tbody tr {
+            transition: background 0.15s;
+        }
+
+        .result-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .result-table td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .result-table td.amount {
+            font-weight: 600;
+            color: #7ecfff;
+            text-align: right;
+        }
+
+        .result-table td.discount {
+            color: var(--success);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .result-table td.net-amount {
+            color: var(--accent-light);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .result-table td.date-col {
+            color: #b0c4e0;
+            white-space: nowrap;
+        }
+
+        .result-table td.stage-col {
+            font-weight: 600;
+        }
+
+        .row-subtotal td {
+            background: rgba(41, 128, 185, 0.08);
+        }
+
+        .row-bank td {
+            background: rgba(41, 128, 185, 0.05);
+        }
+
+        .row-grand td {
+            background: linear-gradient(90deg, rgba(200, 150, 12, 0.18), rgba(200, 150, 12, 0.06));
+            border-top: 2px solid var(--accent) !important;
+            padding: 15px 14px !important;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, var(--bg-card2), var(--bg-card));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 14px;
+        }
+
+        .summary-box .s-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .summary-box .s-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .summary-box.total {
+            border-color: var(--accent);
+        }
+
+        .summary-box.total .s-value {
+            color: var(--accent-light);
+            font-size: 1.5rem;
+        }
+
+        .summary-box.discount-box .s-value {
+            color: var(--success);
+        }
+
+        .summary-box.loan-box .s-value {
+            color: #7ecfff;
+        }
+
+        .badge-stage {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.73rem;
+            font-weight: 700;
+        }
+
+        .badge-deposit {
+            background: rgba(200, 150, 12, 0.2);
+            color: var(--accent-light);
+            border: 1px solid var(--accent);
+        }
+
+        .badge-sign {
+            background: rgba(41, 128, 185, 0.2);
+            color: #7ecfff;
+            border: 1px solid #2980b9;
+        }
+
+        .badge-progress {
+            background: rgba(39, 174, 96, 0.15);
+            color: #5dd88a;
+            border: 1px solid #27ae60;
+        }
+
+        .badge-handover {
+            background: rgba(142, 68, 173, 0.2);
+            color: #c39bd3;
+            border: 1px solid #8e44ad;
+        }
+
+        .badge-pink {
+            background: rgba(231, 76, 60, 0.15);
+            color: #f1948a;
+            border: 1px solid #e74c3c;
+        }
+
+        .badge-bank {
+            background: rgba(41, 128, 185, 0.25);
+            color: #85c1e9;
+            border: 1px solid #2980b9;
+        }
+
+        .support-note {
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            color: #5dd88a;
+            margin-top: 10px;
+        }
+
+        .loan-table-wrap {
+            max-height: 440px;
+            overflow-y: auto;
+            border-radius: 10px;
+        }
+
+        .loan-table-wrap::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .loan-table-wrap::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .bank-only {
+            transition: opacity 0.3s;
+        }
+
+        .bank-only.hidden-section {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .info-icon {
+            cursor: help;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .supported-row td {
+            background: rgba(39, 174, 96, 0.04);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .app-header h1 {
+                font-size: 1.1rem;
+                line-height: 1.3;
+            }
+
+            .app-header .subtitle {
+                font-size: 0.7rem;
+            }
+
+            .logo-badge {
+                padding: 6px 10px;
+                font-size: 1rem;
+            }
+
+            /* Make tabs horizontally scrollable instead of wrapping */
+            .nav-tabs-custom {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding-bottom: 2px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-tabs-custom::-webkit-scrollbar {
+                height: 4px;
+            }
+
+            .nav-tabs-custom::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 2px;
+            }
+
+            .nav-tabs-custom .nav-link {
+                white-space: nowrap;
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .card-custom {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+
+            .btn-calculate {
+                padding: 12px 24px;
+                font-size: 0.95rem;
+            }
+
+            /* Ensure inputs don't zoom on iOS by setting font-size to 16px */
+            .form-control,
+            .form-select {
+                font-size: 16px;
+            }
+
+            /* Hide the text in summary box and only show icons if too tight, or adjust sizes */
+            .summary-box {
+                padding: 14px 16px;
+            }
+
+            .summary-box .s-value {
+                font-size: 1.1rem;
+            }
+
+            .summary-box.total .s-value {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Flatpickr overrides */
+        .flatpickr-calendar {
+            background: var(--bg-card2) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--shadow) !important;
+            color: var(--text-main) !important;
+        }
+
+        .flatpickr-day {
+            color: var(--text-main) !important;
+        }
+
+        .flatpickr-day.selected,
+        .flatpickr-day.selected:hover {
+            background: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: #0d1b2e !important;
+        }
+
+        .flatpickr-day:hover {
+            background: var(--bg-card) !important;
+        }
+
+        .flatpickr-months,
+        .flatpickr-weekdays {
+            background: var(--primary) !important;
+        }
+
+        .flatpickr-month,
+        .flatpickr-weekday {
+            color: var(--text-main) !important;
+            fill: var(--text-main) !important;
+        }
+
+        .numInputWrapper input,
+        .flatpickr-current-month input,
+        .flatpickr-current-month select {
+            color: var(--text-main) !important;
+            background: transparent !important;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: var(--text-main) !important;
+            background: var(--bg-card2) !important;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months option {
+            background: var(--bg-card2) !important;
+        }
+
+        .numInput {
+            width: 60px !important;
+        }
+
+        .cur-year {
+            color: var(--text-main) !important;
+        }
+
+        /* XUẤT BẢN IN PDF (NATIVE) */
+        @media print {
+            @page {
+                margin: 10mm;
+                size: A4 portrait;
+            }
+
+            body,
+            .main-container {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+
+            /* Ẩn các phần thừa */
+            .app-header,
+            .nav-tabs-custom,
+            #tab-input,
+            #btnExportPdf,
+            #btnExportLoanPdf,
+            .mt-5.mb-4.text-center {
+                display: none !important;
+            }
+
+            .card-custom {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin-bottom: 20px !important;
+            }
+
+            .table-dark {
+                --bs-table-bg: #fff;
+                --bs-table-striped-bg: #f9f9f9;
+                --bs-table-color: #000;
+                color: #000 !important;
+                border-color: #999 !important;
+            }
+
+            .table-dark th,
+            .table-dark td {
+                background: transparent !important;
+                color: #000 !important;
+                border-color: #999 !important;
+            }
+
+            .result-table thead th {
+                background: #e9ecef !important;
+                color: #000 !important;
+                border-color: #999 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .summary-box {
+                background: #f8f9fa !important;
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .summary-box .s-label,
+            .summary-box .s-value {
+                color: #000 !important;
+            }
+
+            .text-muted,
+            [style*="color:var(--text-muted)"] {
+                color: #555 !important;
+            }
+
+            [style*="color:var(--accent-light)"],
+            [style*="color:#f1c40f"],
+            [style*="color:#f1948a"],
+            [style*="color:#5dd88a"] {
+                color: #000 !important;
+            }
+
+            #printHeader {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 25px;
+                color: #000;
+                border-bottom: 2px solid #000;
+                padding-bottom: 15px;
+            }
+
+            #printHeader h2 {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+            }
+
+            #printHeader p {
+                font-size: 0.95rem;
+                color: #333;
+                margin: 0;
+            }
+        }
+
+        #printHeader {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <div class="logo-area">
+                <span class="logo-badge">VH</span>
+                <div>
+                    <h1><i class="bi bi-building me-2"></i>Vinhomes Sài Gòn Park – Tính Lịch Thanh Toán</h1>
+                    <div class="subtitle">Áp dụng từ 13/08/2026 · Khu Công viên Tri Thức 1 &amp; Công viên Quốc Tế</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container py-3">
+        <div id="printHeader"></div>
+        <ul class="nav nav-tabs-custom" id="mainTab">
+            <li class="nav-item"><a class="nav-link active" id="tab-input-btn" href="#"
+                    onclick="showTab('input');return false;"><i class="bi bi-pencil-square me-1"></i>Thông tin nhập
+                    liệu</a></li>
+            <li class="nav-item"><a class="nav-link" id="tab-result-btn" href="#"
+                    onclick="showTab('result');return false;"><i class="bi bi-table me-1"></i>Bảng kết quả</a></li>
+            <li class="nav-item"><a class="nav-link" id="tab-loan-btn" href="#"
+                    onclick="showTab('loan');return false;"><i class="bi bi-bank me-1"></i>Lịch trả nợ ngân hàng</a>
+            </li>
+        </ul>
+
+        <!-- TAB INPUT -->
+        <div id="tab-input" class="tab-pane fade-in">
+            <div class="row g-3 mt-0">
+                <!-- CỘT TRÁI -->
+                <div class="col-lg-6">
+                    <div class="card-custom">
+                        <div class="card-title"><i class="bi bi-house-fill"></i> Thông tin bất động sản</div>
+
+                        <!-- THANH TÌM KIẾM MÃ CĂN -->
+                        <div class="mb-3 position-relative">
+                            <label for="searchApt"><i class="bi bi-search me-1"></i>Tìm mã căn <span
+                                    style="color:var(--text-muted);font-weight:400;">(gõ VD: TL35,
+                                    AS51...)</span></label>
+                            <input type="text" class="form-control" id="searchApt"
+                                placeholder="Gõ tên mã căn để tìm kiếm..." autocomplete="off"
+                                oninput="onSearchInput(this.value)">
+                            <div id="searchDropdown"
+                                style="display:none;position:absolute;top:100%;left:0;right:0;z-index:999;background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;max-height:260px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+                            </div>
+                        </div>
+
+                        <!-- DỮ LIỆU CĂN ĐÃ CHỌN -->
+                        <div id="propInfoBox"
+                            style="display:none; background:rgba(200,150,12,0.08); border:1px solid rgba(200,150,12,0.35); border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <span id="selectedCanLabel"
+                                    style="font-weight:700;font-size:1.1rem;color:var(--accent-light);letter-spacing:1px;">—</span>
+                                <button onclick="clearSelected()"
+                                    style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.8rem;"><i
+                                        class="bi bi-x-circle"></i> Xoá chọn</button>
+                            </div>
+                            <div id="selectedCanDetail"
+                                style="font-size:0.83rem;color:var(--text-muted);margin-top:5px;line-height:1.8;"></div>
+                        </div>
+
+                        <!-- NHẬP THỦ CÔNG (dành cho căn mới chưa có trong danh sách) -->
+                        <div id="manualInputWrap">
+                            <div class="mb-2" style="display:flex;align-items:center;gap:8px;">
+                                <span style="font-size:0.85rem;color:var(--text-muted);">Hoặc nhập thủ công:</span>
+                                <select class="form-select form-select-sm" id="apartmentType" onchange="onTypeChange()"
+                                    style="width:auto;flex:1;">
+                                    <option value="rough">Thô</option>
+                                    <option value="finished">Hoàn thiện</option>
+                                    <option value="gianXay">Giãn xây</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="manualPrice">Giá bán trước VAT <span class="text-warning">*</span></label>
+                                <input type="text" class="form-control" id="manualPrice" placeholder="VD: 7.728.414.744"
+                                    oninput="formatNumberInput(this)">
+                            </div>
+                            <div class="row" id="manualDtRow">
+                                <div class="col-6 mb-3">
+                                    <label for="manualDtDat">Diện tích Đất (m²) <span
+                                            class="text-warning">*</span></label>
+                                    <input type="number" class="form-control" id="manualDtDat" placeholder="VD: 50"
+                                        step="0.1">
+                                </div>
+                                <div class="col-6 mb-3" id="manualDtXayCol" style="display:none;">
+                                    <label for="manualDtXay">DT Xây (m²) <span class="text-warning">*</span></label>
+                                    <input type="number" class="form-control" id="manualDtXay" placeholder="VD: 145.8"
+                                        step="0.1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="paymentMethod">Hình thức thanh toán <span class="text-warning">*</span></label>
+                            <select class="form-select" id="paymentMethod" onchange="toggleBankFields()">
+                                <option value="own-early">💰 Vốn tự có – Thanh toán sớm (CK 18%/22.5%)</option>
+                                <option value="own-normal">Vốn tự có – Tiến độ thường (CK 2%)</option>
+                                <option value="bank">🏦 Vay ngân hàng</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="startDate">Ngày đặt cọc / Ký HĐMB <span class="text-warning">*</span></label>
+                            <input type="text" class="form-control" id="startDate" placeholder="dd/mm/yyyy" readonly>
+                        </div>
+
+                        <div class="mb-0">
+                            <label for="handoverDate">Ngày bàn giao dự kiến <span
+                                    style="color:var(--text-muted);font-weight:400;">(để trống = T+180
+                                    ngày)</span></label>
+                            <input type="text" class="form-control" id="handoverDate" placeholder="dd/mm/yyyy" readonly>
+                        </div>
+                    </div>
+
+                    <div class="card-custom bank-only hidden-section" id="bankSection">
+                        <div class="card-title"><i class="bi bi-bank2"></i> Thông tin vay ngân hàng</div>
+                        <div id="bankFields">
+                            <div class="mb-3">
+                                <label for="interestSupportPlan">Phương án Hỗ trợ Lãi suất (HTLS)</label>
+                                <select class="form-select" id="interestSupportPlan"></select>
+                            </div>
+                            <div class="row gx-2 mb-3">
+                                <div class="col-6">
+                                    <label for="loanPct">Tỷ lệ vay (%)</label>
+                                    <select class="form-select" id="loanPct">
+                                        <option value="70">70%</option>
+                                        <option value="60">60%</option>
+                                        <option value="50">50%</option>
+                                        <option value="40">40%</option>
+                                        <option value="30">30%</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label for="loanTerm">Kỳ hạn vay (năm)</label>
+                                    <input type="number" class="form-control" id="loanTerm" value="20">
+                                </div>
+                            </div>
+                            <div class="row gx-2 mb-3">
+                                <div class="col-12">
+                                    <label for="interestRate">Lãi suất dự kiến sau HTLS (%/năm)</label>
+                                    <input type="number" class="form-control" id="interestRate" step="0.1" value="7.5">
+                                </div>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="showBankSim" checked>
+                                <label class="form-check-label" for="showBankSim"
+                                    style="font-size:0.85rem; color:var(--text-muted);">
+                                    Hiển thị bảng chi tiết trả góp gốc lãi Ngân hàng (Tham khảo)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CỘT PHẢI -->
+                <div class="col-lg-6">
+                    <div class="card-custom">
+                        <div class="card-title"><i class="bi bi-star-fill"></i> Hạng thành viên &amp; Khuyến mãi</div>
+
+                        <div class="mb-3">
+                            <label for="vinClubRank">Hạng thành viên VinClub</label>
+                            <select class="form-select" id="vinClubRank">
+                                <option value="none">Không có / Không áp dụng</option>
+                                <option value="Gold">Gold (+0.3%)</option>
+                                <option value="Platinum">Bạch kim / Platinum (+0.4%)</option>
+                                <option value="Diamond">Kim Cương / Diamond (+0.5%)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Chương trình khuyến mãi áp dụng</label>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="promo_birthday33">
+                                <label class="form-check-label" for="promo_birthday33">
+                                    🎂 Sinh nhật 33 năm VGR <span class="text-muted" style="font-size:0.78rem;">(đến
+                                        31/10/2026)</span>
+                                </label>
+                            </div>
+                            <div id="birthday33RankWrap" style="display:none; margin:4px 0 10px 26px;">
+                                <label for="vinClubRankBirthday" style="margin-bottom:4px;">Hạng VinClub áp dụng</label>
+                                <select class="form-select" id="vinClubRankBirthday">
+                                    <option value="Member">Member (+0.3%)</option>
+                                    <option value="Gold">Gold (+0.9%)</option>
+                                    <option value="Platinum">Platinum (+1.2%)</option>
+                                    <option value="Diamond">Diamond (+1.5%)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="promo_earlyMoveIn">
+                                <label class="form-check-label" for="promo_earlyMoveIn">
+                                    🏠 Về ở sớm <span class="text-muted" style="font-size:0.78rem;">(+10% – chỉ Thô
+                                        &amp; Hoàn thiện)</span>
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="promo_aquafield">
+                                <label class="form-check-label" for="promo_aquafield">
+                                    🎁 Quà tặng Aquafield <span class="text-muted" style="font-size:0.78rem;">(voucher
+                                        20tr – 500 căn đầu)</span>
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="promo_noBlnh">
+                                <label class="form-check-label" for="promo_noBlnh">
+                                    🛡️ Từ chối bảo lãnh ngân hàng <span class="text-muted"
+                                        style="font-size:0.78rem;">(+0.5%)</span>
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="promo_goldGift">
+                                <label class="form-check-label" for="promo_goldGift">
+                                    🥇 Quà tặng Vàng <span class="text-muted" style="font-size:0.78rem;">(đến
+                                        10/09/2026)</span>
+                                </label>
+                            </div>
+                            <div id="goldGiftCountWrap" style="display:none; margin:4px 0 10px 26px;">
+                                <label for="goldGiftCount" style="margin-bottom:4px;">Số chỉ Vàng quy đổi</label>
+                                <select class="form-select form-select-sm" id="goldGiftCount">
+                                    <option value="auto">Tự động theo mốc giá gốc CĐT (VAT+KPBT)</option>
+                                    <option value="1">1 chỉ – 15.000.000 VNĐ</option>
+                                    <option value="3">3 chỉ – 45.000.000 VNĐ</option>
+                                    <option value="5">5 chỉ – 75.000.000 VNĐ</option>
+                                    <option value="6">6 chỉ – 90.000.000 VNĐ</option>
+                                    <option value="9">9 chỉ – 135.000.000 VNĐ</option>
+                                </select>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="promo_voucher">
+                                <label class="form-check-label" for="promo_voucher">
+                                    🎫 Voucher mua nhà Vinhomes <span class="text-muted" style="font-size:0.78rem;">(tối
+                                        đa 30% giá, đến 31/12/2026)</span>
+                                </label>
+                            </div>
+                            <div id="voucherAmountWrap" style="display:none; margin:4px 0 0 26px;">
+                                <label for="voucherAmount">Giá trị Voucher (VNĐ)</label>
+                                <input type="text" class="form-control" id="voucherAmount"
+                                    placeholder="Ví dụ: 50.000.000" oninput="formatNumberInput(this)">
+                            </div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label>
+                                Chiết khấu dòng tiền
+                                <span class="info-icon"
+                                    title="Thanh toán trước hạn ≥7 ngày: CK 11%/năm × số tiền × số ngày / 365"><i
+                                        class="bi bi-info-circle-fill"></i></span>
+                            </label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="cashFlowDiscount">
+                                <label class="form-check-label" for="cashFlowDiscount">
+                                    Áp dụng CK dòng tiền 11%/năm (thanh toán trước ≥7 ngày)
+                                </label>
+                            </div>
+                            <div id="cashFlowDaysWrap" style="display:none; margin-top:8px;">
+                                <label for="actualPaymentDate">Ngày khách hàng thanh toán (dự kiến)</label>
+                                <input type="text" class="form-control" id="actualPaymentDate" placeholder="dd/mm/yyyy"
+                                    readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-custom"
+                        style="background:linear-gradient(135deg,#1a3a6b22,#c8960c11); border-color:var(--accent);">
+                        <button class="btn-calculate" onclick="calculate()">
+                            <i class="bi bi-calculator-fill me-2"></i> TÍNH TOÁN
+                        </button>
+                        <div class="text-center mt-2" style="font-size:0.78rem; color:var(--text-muted);">
+                            Nhấn để cập nhật toàn bộ lịch thanh toán &amp; chiết khấu
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB RESULT -->
+        <div id="tab-result" class="tab-pane fade-in" style="display:none;">
+            <div id="resultContent">
+                <div class="card-custom text-center py-5" style="color:var(--text-muted);">
+                    <i class="bi bi-arrow-left-circle" style="font-size:2rem;"></i>
+                    <p class="mt-3">Hãy nhập thông tin và nhấn <strong style="color:var(--accent-light);">TÍNH
+                            TOÁN</strong> để xem kết quả.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB LOAN -->
+        <div id="tab-loan" class="tab-pane fade-in" style="display:none;">
+            <div id="loanContent">
+                <div class="card-custom text-center py-5" style="color:var(--text-muted);">
+                    <i class="bi bi-bank" style="font-size:2rem;"></i>
+                    <p class="mt-3">Chọn hình thức <strong style="color:var(--accent-light);">Vay ngân hàng</strong> và
+                        nhấn TÍNH TOÁN để xem lịch trả nợ.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER BẢN QUYỀN & HỖ TRỢ -->
+    <div class="mt-5 mb-4 text-center" style="font-size: 0.85rem; color: var(--text-muted);">
+        <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 20px;">
+        <p class="mb-1" style="color: rgba(255,255,255,0.7);">
+            <strong>&copy; 2026 Hệ thống Tính Lịch Thanh Toán tự động.</strong><br>
+            Phát triển độc quyền dành cho dự án Vinhomes Sài Gòn Park.
+        </p>
+        <p class="mb-0" style="color: rgba(255,255,255,0.5);">
+            Số liệu được tính toán mang tính chất tham khảo. Khách hàng vui lòng xác nhận lại với nhân viên kinh doanh
+            trước khi ký kết hợp đồng.<br>
+            Nếu phát hiện lỗi hệ thống, xin liên hệ Email: <a href="mailto:wang.jinyufu@gmail.com"
+                style="color: var(--accent-light); text-decoration: none;"><i
+                    class="bi bi-envelope-fill me-1"></i>wang.jinyufu@gmail.com</a>
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+
+    <script>
+        /* =============================================================
+           CHÍNH SÁCH BÁN HÀNG – VINHOMES SÀI GÒN PARK
+           Áp dụng từ: 13/08/2026
+           *** CẬP NHẬT HÀNG THÁNG TẠI ĐÂY ***
+           =============================================================*/
+        const SALES_POLICY = {
+
+            /* Chiết khấu vốn tự có – % tính trên giá trị BĐS
+             * Thô Giãn Xây: CK tính trên Giá trị QSDĐ & Thương mại
+             * Thô, Hoàn thiện: CK tính trên Giá gốc
+             * "Thanh toán sớm" = hoàn tất trong 15 ngày                   */
+            ownCapital: {
+                earlyPayment: {
+                    rough: 18.0,   // Thô: 18% trên giá gốc
+                    finished: 22.5,   // Hoàn thiện: 22.5% trên giá gốc
+                    gianXay: 18.0    // Thô giãn xây: 18% trên QSDĐ & TM
+                },
+                normalProgress: 2.0   // Thanh toán tiến độ thường: 2% (mọi loại căn)
+            },
+
+            /* Chiết khấu dòng tiền: 11%/năm × số tiền × số ngày / 365
+               Điều kiện: thanh toán trước hạn ≥ 7 ngày                    */
+            cashFlowDiscountRate: 11.0,
+
+            /* Hỗ trợ lãi suất khi vay ngân hàng – CĐT hỗ trợ 0%          */
+            interestSupport: {
+                roughAndGianXay: [          // Áp dụng cho: Thô & Thô giãn xây
+                    { months: 30, extraDiscount: 0.0, label: 'PA1 – Hỗ trợ 0% trong 30 tháng' },
+                    { months: 24, extraDiscount: 4.0, label: 'PA2 – Hỗ trợ 0% trong 24 tháng + CK 4%' },
+                    { months: 18, extraDiscount: 8.0, label: 'PA3 – Hỗ trợ 0% trong 18 tháng + CK 8%' }
+                ],
+                finished: [                  // Áp dụng cho: Hoàn thiện
+                    { months: 36, extraDiscount: 0.0, label: 'PA1 – Hỗ trợ 0% trong 36 tháng' },
+                    { months: 24, extraDiscount: 8.0, label: 'PA2 – Hỗ trợ 0% trong 24 tháng + CK 8%' },
+                    { months: 18, extraDiscount: 12.0, label: 'PA3 – Hỗ trợ 0% trong 18 tháng + CK 12%' }
+                ]
+            },
+
+            /* Khuyến mãi & Quà tặng
+             * VinClub: Gold=0.3%, Platinum=0.4%, Diamond=0.5%
+             * (Chú ý: file chính sách không đề cập hạng Member cho VinClub)*/
+            promotions: {
+                vinClub: { Gold: 0.3, Platinum: 0.4, Diamond: 0.5 },
+                birthday33: {                // Đến 31/10/2026
+                    Member: 0.3, Gold: 0.9, Platinum: 1.2, Diamond: 1.5
+                },
+                earlyMoveIn: 5.0,            // % – chỉ áp dụng Thô & Hoàn thiện (Cam kết về ở sớm)
+                aquafield: 20_000_000,     // VNĐ – 500 căn đầu tiên
+                goldGift: {                  // 13/08/2026 – 10/09/2026 (theo giá gốc gồm VAT+KPBT trước CK)
+                    roughAndGianXay: {
+                        under10b: { chi: 3, vnd: 45_000_000 },
+                        from10to20b: { chi: 6, vnd: 90_000_000 },
+                        over20b: { chi: 9, vnd: 135_000_000 }
+                    },
+                    finished: {
+                        under10b: { chi: 1, vnd: 15_000_000 },
+                        from10to20b: { chi: 3, vnd: 45_000_000 },
+                        over20b: { chi: 5, vnd: 75_000_000 }
+                    }
+                },
+                voucher: { maxPercent: 30.0 } // Tối đa 30% giá trị nhà, đến 31/12/2026
+            },
+
+            /* Tiến độ thanh toán – % tính trên tổng giá trị BĐS
+             *
+             * VỐN TỰ CÓ (tổng kiểm tra):
+             *   Cọc 300tr (cố định) + ký HĐMB 15% + lần2 15% + lần3 15%
+             *   + lần4 15% + lần5 15% + bàn giao 25% + bảo trì 2% + sổ 5%
+             *   = 107% tổng giá trị (tiền cọc đã gộp vào đợt ký HĐMB)
+             *   => KH thực trả cho CĐT = cọc + (15%-cọc) + 4×15% + 25% + 2% + 5%
+             *                           = 300tr + (0.15P-300tr) + 0.6P + 0.25P + 0.02P + 0.05P
+             *                           = P + 0.02P = 1.02P
+             *
+             * VAY NH (tổng kiểm tra):
+             *   Cọc 300tr + ký HĐMB 15% + vốn tự có 15% + NH GN 70% + sổ 5%
+             *   = 105% (không có đợt bàn giao riêng, NH GN bao phủ phần đó)
+             *   => KH tự trả = cọc + (15%-cọc) + 15% + 5% = 35% + 300tr        */
+            paymentSchedule: {
+                deposit: 300_000_000,  // Tiền cọc cố định (VNĐ)
+                signingContract: 15.0,         // % đợt ký HĐMB (10% + 5% đảm bảo)
+                progressPayments: [15.0, 15.0, 15.0, 15.0], // Lần 2-5, mỗi đợt 15%
+                handover: 25.0,         // % đợt bàn giao
+                maintenanceFee: 2.0,          // % kinh phí bảo trì (không áp CK)
+                finalPayment: 5.0,          // % đợt sổ hồng
+                // Vay NH:
+                bankEquity: 15.0,         // % vốn tự có thêm sau ký HĐMB
+                bankLoan: 70.0          // % ngân hàng giải ngân (tối đa)
+            }
+        };
+
+        /* =============================================================
+           KHỞI TẠO
+           =============================================================*/
+        document.addEventListener('DOMContentLoaded', () => {
+            // Flatpickr với hỗ trợ chọn năm trực tiếp
+            const fpConfig = {
+                dateFormat: 'd/m/Y',
+                locale: 'vn',
+                allowInput: false,
+                // Cho phép gõ năm trực tiếp bằng cách scroll trên ô năm
+                yearSelectorType: 'dropdown'  // Không dùng được trong flatpickr cơ bản
+            };
+
+            flatpickr('#startDate', {
+                ...fpConfig,
+                defaultDate: new Date(),
+                onReady(dates, dateStr, fp) { fp.calendarContainer.classList.add('fp-custom'); }
+            });
+            flatpickr('#handoverDate', {
+                ...fpConfig,
+                onReady(dates, dateStr, fp) { fp.calendarContainer.classList.add('fp-custom'); }
+            });
+            flatpickr('#actualPaymentDate', {
+                ...fpConfig,
+                defaultDate: new Date(),
+                onReady(dates, dateStr, fp) { fp.calendarContainer.classList.add('fp-custom'); }
+            });
+
+            updateInterestSupportOptions();
+            toggleBankFields();
+
+            document.getElementById('promo_birthday33').addEventListener('change', function () {
+                document.getElementById('birthday33RankWrap').style.display = this.checked ? 'block' : 'none';
+            });
+            document.getElementById('promo_goldGift').addEventListener('change', function () {
+                document.getElementById('goldGiftCountWrap').style.display = this.checked ? 'block' : 'none';
+            });
+            document.getElementById('promo_voucher').addEventListener('change', function () {
+                document.getElementById('voucherAmountWrap').style.display = this.checked ? 'block' : 'none';
+            });
+            document.getElementById('cashFlowDiscount').addEventListener('change', function () {
+                document.getElementById('cashFlowDaysWrap').style.display = this.checked ? 'block' : 'none';
+            });
+        });
+
+        /* =============================================================
+           TIỆN ÍCH
+           =============================================================*/
+        function fmt(n) {
+            if (n === null || n === undefined || isNaN(n)) return '0';
+            return Math.round(n).toLocaleString('vi-VN');
+        }
+
+        function parseNum(str) {
+            if (!str) return 0;
+            // Xóa dấu chấm (phân cách hàng nghìn) và đổi dấu phẩy (nếu có) thành dấu chấm thập phân
+            return parseFloat(String(str).replace(/\./g, '').replace(/,/g, '.')) || 0;
+        }
+
+        function formatNumberInput(el) {
+            const raw = el.value.replace(/[^0-9]/g, '');
+            if (raw) el.value = parseInt(raw, 10).toLocaleString('vi-VN');
+        }
+
+        function addDays(date, days) {
+            const d = new Date(date); d.setDate(d.getDate() + days); return d;
+        }
+
+        function addMonths(date, m) {
+            const d = new Date(date); d.setMonth(d.getMonth() + m); return d;
+        }
+
+        function fmtDate(date) {
+            if (!date) return '—';
+            return String(date.getDate()).padStart(2, '0') + '/' +
+                String(date.getMonth() + 1).padStart(2, '0') + '/' + date.getFullYear();
+        }
+
+        function parseDate(str) {
+            if (!str) return null;
+            const p = str.split('/').map(Number);
+            if (p.length !== 3 || isNaN(p[0])) return null;
+            return new Date(p[2], p[1] - 1, p[0]);
+        }
+
+        /* =============================================================
+           UI HELPERS
+           =============================================================*/
+        function showTab(name) {
+            ['input', 'result', 'loan'].forEach(t => {
+                document.getElementById('tab-' + t).style.display = (t === name) ? 'block' : 'none';
+                document.getElementById('tab-' + t + '-btn').classList.toggle('active', t === name);
+            });
+        }
+
+        function toggleBankFields() {
+            const isBank = document.getElementById('paymentMethod').value === 'bank';
+            document.getElementById('bankSection').classList.toggle('hidden-section', !isBank);
+        }
+
+        function onTypeChange() {
+            const type = document.getElementById('apartmentType').value;
+            // Show/hide DT Xây for Giãn xây manual input
+            const dtXayCol = document.getElementById('manualDtXayCol');
+            if (dtXayCol) dtXayCol.style.display = (type === 'gianXay') ? 'block' : 'none';
+            updateInterestSupportOptions();
+        }
+
+        function updateInterestSupportOptions() {
+            const type = document.getElementById('apartmentType').value;
+            const plans = (type === 'finished')
+                ? SALES_POLICY.interestSupport.finished
+                : SALES_POLICY.interestSupport.roughAndGianXay;
+            document.getElementById('interestSupportPlan').innerHTML =
+                plans.map((p, i) =>
+                    `<option value="${i}">${p.label}${p.extraDiscount > 0 ? ' (CK thêm ' + p.extraDiscount + '%)' : ''}</option>`
+                ).join('');
+        }
+
+        /* =============================================================
+           HÀM PHÂN BỔ CHIẾT KHẤU
+           Dùng closure để quản lý số dư CK còn lại
+           =============================================================*/
+        function makeDiscountApplier(totalDiscount) {
+            let remaining = totalDiscount;
+            return function (grossAmt) {
+                const d = Math.min(remaining, Math.max(0, grossAmt));
+                remaining -= d;
+                return { gross: grossAmt, ck: d, net: grossAmt - d };
+            };
+        }
+        /* =============================================================
+           TÍNH LỊCH TRẢ NỢ NGÂN HÀNG
+           Phương pháp: trả đều gốc (dư nợ giảm dần)
+           =============================================================*/
+        function calcLoan(principal, annualRatePct, termYears, supportPlan, disbursementDate) {
+            const monthRate = annualRatePct / 100 / 12;
+            const totalMonths = termYears * 12;
+            const principalPerM = principal / totalMonths;
+            const supportMonths = supportPlan ? supportPlan.months : 0;
+
+            let rows = [];
+            let balance = principal;
+            let totalInterest = 0;
+            let totalCDT = 0;
+            let totalKHPays = 0;
+
+            for (let m = 1; m <= totalMonths; m++) {
+                const interest = balance * monthRate;
+                balance -= principalPerM;
+                const supported = m <= supportMonths;
+                const khInterest = supported ? 0 : interest;
+                const khTotal = principalPerM + khInterest;
+                const date_m = addMonths(disbursementDate, m);
+
+                totalInterest += interest;
+                if (supported) totalCDT += interest;
+                totalKHPays += khTotal;
+
+                rows.push({
+                    m, date: date_m,
+                    principal: principalPerM,
+                    interest, khInterest, khTotal,
+                    balance: Math.max(0, balance),
+                    supported
+                });
+            }
+
+            return {
+                rows, principal, annualRatePct, termYears, totalMonths,
+                supportPlan, supportMonths, disbursementDate,
+                totalInterest, totalCDT, totalKHPays, principalPerM
+            };
+        }
+
+        /* =============================================================
+           RENDER KẾT QUẢ
+           =============================================================*/
+        function renderResult(stages, ckDetails, S) {
+            const {
+                propValue, typeLabel, paymentMethod, ckPct, ckVnd,
+                totalCk, totalCkAll, cfDiscount, actualPaymentDate, cfDetailsStr,
+                totalGross, totalKHtoCDT, totalKHtoBank, grandTotal, loanData, showBankSim, PA
+            } = S;
+
+            const methodLabel = paymentMethod === 'own-early' ? '💰 Vốn tự có – Thanh toán sớm'
+                : paymentMethod === 'own-normal' ? 'Vốn tự có – Tiến độ thường'
+                    : '🏦 Vay ngân hàng';
+
+            /* ---- Bảng lịch thanh toán ---- */
+            const stageRows = stages.map(s => `
+        <tr>
+            <td class="stage-col">Đợt ${s.no}&nbsp;<span class="badge-stage ${s.badge}">${s.label}</span></td>
+            <td class="date-col"><i class="bi bi-calendar3 me-1"></i>${fmtDate(s.date)}</td>
+            <td class="amount">${fmt(s.gross)}</td>
+            <td class="discount">${s.ck > 0 ? '–&nbsp;' + fmt(s.ck) : '—'}</td>
+            <td class="net-amount">${fmt(s.net)}</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">${s.note || ''}</td>
+        </tr>`).join('');
+
+            const cfRow = cfDiscount > 0 ? `
+        <tr style="background:rgba(39,174,96,0.06);">
+            <td colspan="3" style="color:#5dd88a;font-style:italic;">
+                <i class="bi bi-lightning-fill me-1"></i>CK dòng tiền 11%/năm <br>
+                <span style="font-size:0.75rem;">(Chi tiết sớm: ${cfDetailsStr.join(', ')})</span>
+            </td>
+            <td class="discount">–&nbsp;${fmt(cfDiscount)}</td>
+            <td class="net-amount" colspan="2"></td>
+        </tr>` : '';
+
+            const subtotalLabel = paymentMethod === 'bank'
+                ? 'Tổng KH trả cho CĐT <span style="font-size:0.73rem;font-weight:400;color:var(--text-muted);">(không gồm phần NH GN 70%)</span>'
+                : 'Tổng KH trả cho CĐT';
+
+            let html = `
+        <tr class="row-subtotal">
+            <td colspan="2" style="color:#7ecfff;font-weight:700;">${subtotalLabel}</td>
+            <td class="amount">${fmt(totalGross)}</td>
+            <td class="discount">–&nbsp;${fmt(totalCkAll)}</td>
+            <td class="net-amount">${fmt(totalKHtoCDT)}</td>
+            <td></td>
+        </tr>`;
+
+            const bankRow = loanData ? `
+        <tr class="row-bank">
+            <td colspan="2" style="color:#85c1e9;font-weight:700;">
+                <i class="bi bi-bank me-1"></i>Tổng trả nợ ngân hàng (gốc + lãi KH chịu)
+                <span style="font-size:0.73rem;font-weight:400;color:var(--text-muted);">
+                    – ${loanData.annualRatePct}%/năm × ${loanData.termYears} năm
+                </span>
+            </td>
+            <td class="amount">${fmt(loanData.principal)}</td>
+            <td class="discount">—</td>
+            <td class="net-amount">${fmt(loanData.totalKHPays)}</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">KH trả dần ${loanData.termYears} năm</td>
+        </tr>` : '';
+
+            const grandRow = `
+        <tr class="row-grand">
+            <td colspan="2" style="color:var(--accent-light);font-weight:800;font-size:1rem;">
+                <i class="bi bi-wallet2 me-2"></i>TỔNG CHI PHÍ KHÁCH HÀNG PHẢI TRẢ (Gốc + Lãi NH)
+            </td>
+            <td colspan="3" class="net-amount" style="font-size:1.3rem;">
+                ${fmt(grandTotal)} VNĐ
+            </td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+                CĐT: ${fmt(totalKHtoCDT)} VNĐ${loanData ? ' + NH: ' + fmt(totalKHtoBank) + ' VNĐ' : ''}
+            </td>
+        </tr>`;
+
+            /* ---- Bảng chi tiết CK ---- */
+            const ckRows = ckDetails.map(d => `
+        <tr>
+            <td>${d.label} <span style="font-size:0.75rem;color:var(--text-muted);">${d.appliedOn ? '(áp dụng trên ' + d.appliedOn + ')' : ''}</span></td>
+            <td class="text-end" style="color:${d.pct > 0 ? '#5dd88a' : 'var(--text-muted)'};font-weight:600;">
+                ${d.pct > 0 ? d.pct + '%' : '—'}
+            </td>
+            <td class="text-end" style="color:${d.vnd > 0 ? '#5dd88a' : 'var(--text-muted)'};font-weight:600;">
+                ${d.vnd > 0 ? fmt(d.vnd) + ' VNĐ' : '—'}
+            </td>
+            <td class="text-end" style="font-weight:700;color:#7ecfff;">
+                ${fmt(d.vnd)} VNĐ
+            </td>
+        </tr>`).join('');
+
+            const cfCkRow = cfDiscount > 0 ? `
+        <tr>
+            <td>CK dòng tiền 11%/năm (tính theo số ngày thực tế từng đợt)</td>
+            <td class="text-end" style="color:var(--text-muted);">—</td>
+            <td class="text-end" style="color:var(--text-muted);">—</td>
+            <td class="text-end" style="font-weight:700;color:#7ecfff;">${fmt(cfDiscount)} VNĐ</td>
+        </tr>` : '';
+
+            document.getElementById('resultContent').innerHTML = `
+    <div class="fade-in" id="result-container">
+
+        <!-- Summary boxes -->
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3">
+                <div class="summary-box">
+                    <div class="s-label"><i class="bi bi-house me-1"></i>Giá trị BĐS</div>
+                    <div class="s-value" style="color:#7ecfff;font-size:1.05rem;">${fmt(propValue)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">${typeLabel} · ${methodLabel}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-box discount-box">
+                    <div class="s-label"><i class="bi bi-percent me-1"></i>Tổng chiết khấu</div>
+                    <div class="s-value">–&nbsp;${fmt(totalCkAll)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">${ckPct.toFixed(1)}% + quà ${fmt(ckVnd)} VNĐ</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-box loan-box">
+                    <div class="s-label"><i class="bi bi-cash-stack me-1"></i>Trả cho CĐT</div>
+                    <div class="s-value">${fmt(totalKHtoCDT)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">VNĐ (sau chiết khấu)</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-box total">
+                    <div class="s-label"><i class="bi bi-wallet2 me-1"></i>Tổng phải trả</div>
+                    <div class="s-value">${fmt(grandTotal)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">VNĐ (CĐT + NH gốc+lãi)</div>
+                </div>
+            </div>
+        </div>
+
+        ${PA && PA.p_const > 0 ? `
+        <!-- Bóc tách Giá Tiền Đất & Tiền Xây (chỉ Giãn xây) -->
+        <div class="card-custom mb-3">
+            <div class="card-title"><i class="bi bi-pie-chart-fill me-2"></i> Bóc tách Chi tiết Giá (Đất &amp; Xây)</div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div style="background:rgba(41,128,185,0.08); border:1px solid var(--border); border-radius:10px; padding:14px;">
+                        <div style="font-weight:700; color:#7ecfff; margin-bottom:8px;"><i class="bi bi-geo-alt-fill me-1"></i>PHẦN TIỀN ĐẤT</div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:0.85rem;">
+                            <span>Giá Đất (chưa VAT):</span>
+                            <strong>${fmt(PA.p_land)} VNĐ</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:0.85rem;">
+                            <span>VAT Đất (10%):</span>
+                            <strong style="color:var(--bs-warning);">${fmt(PA.vat_land)} VNĐ</strong>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2" style="border-top:1px dashed var(--border); font-size:0.9rem;">
+                            <span style="font-weight:600;">TỔNG TIỀN ĐẤT (gồm VAT):</span>
+                            <strong style="color:var(--accent-light);">${fmt(PA.land_total)} VNĐ</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div style="background:rgba(39,174,96,0.08); border:1px solid var(--border); border-radius:10px; padding:14px;">
+                        <div style="font-weight:700; color:#5dd88a; margin-bottom:8px;"><i class="bi bi-tools me-1"></i>PHẦN TIỀN XÂY DỰNG</div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:0.85rem;">
+                            <span>Giá Xây dựng (chưa VAT):</span>
+                            <strong>${fmt(PA.p_const)} VNĐ</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:0.85rem;">
+                            <span>VAT Xây dựng (10%):</span>
+                            <strong style="color:var(--bs-warning);">${fmt(PA.vat_const)} VNĐ</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:0.85rem;">
+                            <span>Kinh phí bảo trì (KPBT 0.5%):</span>
+                            <strong style="color:#c39bd3;">${fmt(PA.kpbt)} VNĐ</strong>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2" style="border-top:1px dashed var(--border); font-size:0.9rem;">
+                            <span style="font-weight:600;">TỔNG TIỀN XÂY + KPBT:</span>
+                            <strong style="color:var(--accent-light);">${fmt(PA.const_total + PA.kpbt)} VNĐ</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Lịch thanh toán -->
+        <div class="card-custom">
+            <div class="card-title"><i class="bi bi-list-check"></i> Lịch thanh toán chi tiết</div>
+            <div style="overflow-x:auto;">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width:210px;">Đợt / Giai đoạn</th>
+                            <th style="min-width:105px;">Ngày</th>
+                            <th class="text-end" style="min-width:145px;">Số tiền gốc (VNĐ)</th>
+                            <th class="text-end" style="min-width:140px;">Chiết khấu (VNĐ)</th>
+                            <th class="text-end" style="min-width:145px;">Thực trả (VNĐ)</th>
+                            <th style="min-width:220px;">Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${stageRows}
+                        ${cfRow}
+                        ${html}
+                        ${bankRow}
+                        ${grandRow}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Chi tiết chiết khấu -->
+        <div class="card-custom">
+            <div class="card-title"><i class="bi bi-tag-fill"></i> Chi tiết chiết khấu &amp; Khuyến mãi</div>
+            <div style="overflow-x:auto;">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>Loại chiết khấu / Khuyến mãi</th>
+                            <th class="text-end">% CK</th>
+                            <th class="text-end">Quà / Cố định</th>
+                            <th class="text-end">Giá trị quy đổi (VNĐ)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${ckRows}
+                        ${cfCkRow}
+                        <tr style="background:rgba(39,174,96,0.08);font-weight:800;">
+                            <td style="color:#5dd88a;">TỔNG CHIẾT KHẤU</td>
+                            <td class="text-end" style="color:#5dd88a;">${ckPct.toFixed(1)}%</td>
+                            <td class="text-end" style="color:#5dd88a;">${fmt(ckVnd)} VNĐ</td>
+                            <td class="text-end" style="color:var(--accent-light);font-size:1rem;">${fmt(totalCkAll)} VNĐ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        </div>
+    </div>`;
+
+            /* ---- Tab ngân hàng ---- */
+            if (loanData) {
+                renderLoan(loanData);
+            } else {
+                document.getElementById('loanContent').innerHTML = `
+            <div class="card-custom text-center py-4" style="color:var(--text-muted);">
+                <i class="bi bi-info-circle" style="font-size:1.8rem;"></i>
+                <p class="mt-2">Hình thức <strong>Vốn tự có</strong> – không có lịch trả nợ ngân hàng.</p>
+            </div>`;
+            }
+        }
+
+        /* =============================================================
+           RENDER LỊCH TRẢ NỢ NGÂN HÀNG
+           =============================================================*/
+        function renderLoan(d) {
+            const rows = d.rows.map(r => `
+        <tr class="${r.supported ? 'supported-row' : ''}">
+            <td class="text-center">${r.m}</td>
+            <td class="date-col">${fmtDate(r.date)}</td>
+            <td class="text-end">${fmt(r.principal)}</td>
+            <td class="text-end" style="color:${r.supported ? '#5dd88a' : '#f1948a'};">
+                ${fmt(r.interest)}
+                ${r.supported ? '<span class="badge-stage badge-progress ms-1" style="font-size:0.65rem;">CĐT hỗ trợ</span>' : ''}
+            </td>
+            <td class="text-end" style="font-weight:600;color:${r.supported ? '#5dd88a' : 'var(--accent-light)'};">${fmt(r.khTotal)}</td>
+            <td class="text-end" style="color:var(--text-muted);">${fmt(r.balance)}</td>
+        </tr>`).join('');
+
+            document.getElementById('loanContent').innerHTML = `
+    <div class="fade-in" id="loan-container">
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3">
+                <div class="summary-box loan-box">
+                    <div class="s-label"><i class="bi bi-bank me-1"></i>Số tiền vay (70%)</div>
+                    <div class="s-value">${fmt(d.principal)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">VNĐ</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-box">
+                    <div class="s-label"><i class="bi bi-graph-up me-1"></i>Lãi suất / Kỳ hạn</div>
+                    <div class="s-value" style="color:#f1948a;font-size:1.1rem;">${d.annualRatePct}%/năm</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">${d.termYears} năm (${d.totalMonths} tháng)</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-box discount-box">
+                    <div class="s-label"><i class="bi bi-shield-check me-1"></i>CĐT hỗ trợ ${d.supportMonths} tháng</div>
+                    <div class="s-value">–&nbsp;${fmt(d.totalCDT)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">VNĐ (KH không phải trả)</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-box total">
+                    <div class="s-label"><i class="bi bi-cash me-1"></i>KH trả NH (gốc+lãi)</div>
+                    <div class="s-value">${fmt(d.totalKHPays)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">VNĐ / ${d.termYears} năm</div>
+                </div>
+            </div>
+        </div>
+
+        ${d.supportMonths > 0 ? `
+        <div class="support-note mb-3">
+            <i class="bi bi-shield-check-fill me-1"></i>
+            <strong>CĐT hỗ trợ lãi 0% trong ${d.supportMonths} tháng đầu</strong> (tháng 1 → ${d.supportMonths}).
+            KH chỉ trả gốc <strong>${fmt(d.principalPerM)} VNĐ/tháng</strong>.
+            Lãi ${fmt(d.totalCDT)} VNĐ được CĐT thanh toán thay.
+            Từ tháng ${d.supportMonths + 1}, KH trả đủ gốc + lãi theo dư nợ giảm dần.
+        </div>` : ''}
+
+        <div class="card-custom">
+            <div class="card-title"><i class="bi bi-table"></i> Lịch trả góp hàng tháng (${d.totalMonths} kỳ)</div>
+            <div class="loan-table-wrap">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="min-width:46px;">Kỳ</th>
+                            <th style="min-width:105px;">Ngày</th>
+                            <th class="text-end" style="min-width:130px;">Trả gốc (VNĐ)</th>
+                            <th class="text-end" style="min-width:130px;">Lãi (VNĐ)</th>
+                            <th class="text-end" style="min-width:140px;">KH thực trả (VNĐ)</th>
+                            <th class="text-end" style="min-width:130px;">Dư nợ còn (VNĐ)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                        <tr style="background:rgba(200,150,12,0.08);font-weight:800;">
+                            <td colspan="2" style="color:var(--accent-light);">TỔNG</td>
+                            <td class="net-amount">${fmt(d.principal)}</td>
+                            <td class="text-end" style="color:#f1948a;">${fmt(d.totalInterest)}</td>
+                            <td class="net-amount">${fmt(d.totalKHPays)}</td>
+                            <td class="text-end" style="color:#5dd88a;">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>`;
+        }
+
+        /* =============================================================
+           AUTOCOMPLETE & SELECTED APARTMENT STATE
+           =============================================================*/
+        let selectedApt = null; // {macan, type, dtDat, dtXay, priceBeforeVat}
+
+        function onSearchInput(val) {
+            const dd = document.getElementById('searchDropdown');
+            const q = val.trim().toUpperCase().replace(/\s+/g, '');
+            if (q.length < 1) { dd.style.display = 'none'; return; }
+
+            const matches = (typeof APARTMENT_DATA !== 'undefined' ? APARTMENT_DATA : []).filter(a =>
+                a.macan.toUpperCase().replace(/\s+/g, '').includes(q)
+            ).slice(0, 20);
+
+            if (matches.length === 0) {
+                dd.style.display = 'none'; return;
+            }
+
+            // If user typed exact match (e.g. TL35-29 or AS72-22), auto-select it immediately!
+            const exact = matches.find(m => m.macan.toUpperCase().replace(/\s+/g, '') === q);
+            if (exact && selectedApt?.macan !== exact.macan) {
+                selectApt(exact.macan);
+                dd.style.display = 'none';
+                return;
+            }
+
+            const typeLabel = { rough: 'Thô', finished: 'Hoàn thiện', gianXay: 'Giãn xây' };
+            dd.innerHTML = matches.map(a => `
+        <div onclick="selectApt('${a.macan}')" ontouchstart="selectApt('${a.macan}')"
+             style="padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"
+             onmouseover="this.style.background='rgba(200,150,12,0.12)'" onmouseout="this.style.background=''"
+        >
+            <span style="font-weight:700;color:var(--accent-light);">${a.macan}</span>
+            <span style="font-size:0.78rem;color:var(--text-muted);">${typeLabel[a.type]} · ${fmt(a.priceBeforeVat)} VNĐ</span>
+        </div>`).join('');
+            dd.style.display = 'block';
+        }
+
+        function selectApt(macan) {
+            const data = (typeof APARTMENT_DATA !== 'undefined' ? APARTMENT_DATA : []);
+            const apt = data.find(a => a.macan === macan);
+            if (!apt) return;
+
+            selectedApt = apt;
+
+            // Update search box
+            document.getElementById('searchApt').value = apt.macan;
+            document.getElementById('searchDropdown').style.display = 'none';
+
+            // Show info box
+            const typeLabel = { rough: '🧱 Thô', finished: '🏠 Hoàn thiện', gianXay: '🏗️ Giãn xây' };
+            document.getElementById('selectedCanLabel').textContent = apt.macan;
+            let detail = `${typeLabel[apt.type]} &nbsp;|&nbsp; DT Đất: ${apt.dtDat} m² &nbsp;|&nbsp; DT Xây: ${apt.dtXay} m²<br>`;
+            detail += `Giá trước VAT: <strong style="color:var(--accent-light);">${fmt(apt.priceBeforeVat)} VNĐ</strong>`;
+            document.getElementById('selectedCanDetail').innerHTML = detail;
+            document.getElementById('propInfoBox').style.display = 'block';
+
+            // Sync type dropdown & hide manual inputs
+            document.getElementById('apartmentType').value = apt.type;
+            document.getElementById('manualInputWrap').style.display = 'none';
+
+            updateInterestSupportOptions();
+        }
+
+        function clearSelected() {
+            selectedApt = null;
+            document.getElementById('searchApt').value = '';
+            document.getElementById('propInfoBox').style.display = 'none';
+            document.getElementById('manualInputWrap').style.display = 'block';
+            onTypeChange();
+        }
+
+        /* =============================================================
+           BÓCTÁCH GIÁ TỰ ĐỘNG (Công thức bí mật CĐT)
+           =============================================================
+           Đơn giá Tiền SDĐ: 9.740.326 VNĐ/m2 đất
+           Đơn giá Xây dựng (Giãn xây): 8.500.000 VNĐ/m2 xây
+           KPBT = 0.5% × Giá trước VAT
+           VAT  = (Giá trước VAT - Tiền SDĐ) × 10%
+           =============================================================*/
+        const UNIT_LAND_FEE = 9_740_326;   // VNĐ/m2 đất
+        const UNIT_CONST_PRICE = 8_500_000;   // VNĐ/m2 xây (Giãn xây)
+
+        function breakdownPrice(currentLandPrice, dtDat, dtXay, type, tienSDĐ, fixedKpbt) {
+            const p_const = (type === 'gianXay') ? Math.round(UNIT_CONST_PRICE * dtXay) : 0;
+            const kpbt = fixedKpbt > 0 ? fixedKpbt : Math.round((currentLandPrice + p_const) * 0.005);
+            const landFee = tienSDĐ > 0 ? tienSDĐ : Math.round(UNIT_LAND_FEE * dtDat);
+
+            if (type === 'gianXay') {
+                const p_land = currentLandPrice; // Giá Đất sau CK
+                const vat_land = Math.round((p_land - landFee) * 0.10);
+                const vat_const = Math.round(p_const * 0.10);
+
+                return {
+                    p_land, p_const,
+                    vat_land, vat_const,
+                    kpbt,
+                    land_total: p_land + vat_land,
+                    const_total: p_const + vat_const,
+                    allin: p_land + vat_land + p_const + vat_const + kpbt
+                };
+            } else {
+                const p_land = currentLandPrice;
+                const vat_land = Math.round((p_land - landFee) * 0.10);
+                const allin = p_land + vat_land + kpbt;
+
+                return {
+                    p_land, p_const: 0,
+                    vat_land, vat_const: 0,
+                    kpbt,
+                    land_total: p_land + vat_land,
+                    const_total: 0,
+                    allin
+                };
+            }
+        }
+
+        /* =============================================================
+           TÍNH TOÁN CHÍNH (viết lại)
+           =============================================================*/
+        function calculate() {
+            // Lấy dữ liệu căn hộ (ưu tiên từ autocomplete, fallback nhập mã trực tiếp hoặc nhập thủ công)
+            let apt = selectedApt;
+
+            if (!apt) {
+                const searchVal = document.getElementById('searchApt').value.trim().toUpperCase().replace(/\s+/g, '');
+                if (searchVal && typeof APARTMENT_DATA !== 'undefined') {
+                    const found = APARTMENT_DATA.find(a =>
+                        a.macan.toUpperCase().replace(/\s+/g, '') === searchVal ||
+                        a.macan.toUpperCase().replace(/\s+/g, '').includes(searchVal)
+                    );
+                    if (found) {
+                        selectApt(found.macan);
+                        apt = found;
+                    }
+                }
+            }
+
+            if (!apt) {
+                const price = parseNum(document.getElementById('manualPrice').value);
+                const dtDat = parseFloat(document.getElementById('manualDtDat').value) || 0;
+                const dtXay = parseFloat(document.getElementById('manualDtXay').value) || 0;
+                const type = document.getElementById('apartmentType').value;
+                if (!price || !dtDat) {
+                    alert('⚠️ Chưa nhận diện được mã căn!\nVui lòng chọn mã căn từ danh sách gợi ý hoặc nhập Giá & Diện tích thủ công.'); return;
+                }
+                if (type === 'gianXay' && !dtXay) {
+                    alert('⚠️ Vui lòng nhập Diện tích Xây dựng cho loại Giãn xây!'); return;
+                }
+                apt = { macan: 'Nhập thủ công', type, dtDat, dtXay, priceBeforeVat: price, vat: 0, kpbt: 0 };
+            }
+
+            // Determine Base Tiền SDĐ and KPBT
+            let tienSDĐ = 0;
+            let fixedKpbt = 0;
+            if (apt.macan !== 'Nhập thủ công' && apt.vat > 0) {
+                // Derive exact Tiền SDĐ from original price and VAT
+                // VAT = (Price - Tiền SDĐ) * 10%  =>  Tiền SDĐ = Price - VAT * 10
+                tienSDĐ = apt.priceBeforeVat - apt.vat * 10;
+                fixedKpbt = apt.kpbt;
+            }
+
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const startDate = parseDate(document.getElementById('startDate').value) || new Date();
+            const handoverDateStr = document.getElementById('handoverDate').value;
+            const handoverDate = (handoverDateStr && parseDate(handoverDateStr))
+                ? parseDate(handoverDateStr) : addDays(startDate, 547); // ~Q4/2027
+            const pinkBookDate = addMonths(handoverDate, 12);
+
+            const vinClubRank = document.getElementById('vinClubRank').value;
+            const promoBirthday33 = document.getElementById('promo_birthday33').checked;
+            const birthday33Rank = document.getElementById('vinClubRankBirthday').value;
+            const promoEarlyMoveIn = document.getElementById('promo_earlyMoveIn').checked;
+            const promoAquafield = document.getElementById('promo_aquafield').checked;
+            const promoNoBlnh = document.getElementById('promo_noBlnh').checked;
+            const promoGoldGift = document.getElementById('promo_goldGift').checked;
+            const promoVoucher = document.getElementById('promo_voucher').checked;
+            const voucherAmount = parseNum(document.getElementById('voucherAmount').value);
+            const useCashFlow = document.getElementById('cashFlowDiscount').checked;
+            const actualPaymentDate = parseDate(document.getElementById('actualPaymentDate').value) || startDate;
+            const loanPct = parseInt(document.getElementById('loanPct').value) || 70;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const loanTermYears = parseInt(document.getElementById('loanTerm').value) || 20;
+            const supportPlanIdx = parseInt(document.getElementById('interestSupportPlan').value) || 0;
+            const showBankSim = document.getElementById('showBankSim').checked;
+
+            const SP = SALES_POLICY;
+            const typeLabel = { rough: 'Thô', finished: 'Hoàn thiện', gianXay: 'Giãn xây' }[apt.type];
+
+            /* --- Bước 1: Chiết khấu tính lùi (chỉ trên Giá Đất trước VAT) --- */
+            let ckDetails = [];
+            const p_const = (apt.type === 'gianXay') ? Math.round(UNIT_CONST_PRICE * apt.dtXay) : 0;
+            let currentLandPrice = apt.priceBeforeVat - p_const; // giá gốc ĐẤT chưa VAT để tính CK
+            let totalCkVnd = 0;
+            let gVnd = 0; // Khai báo gVnd ở đây để dùng chung cho Về ở sớm
+
+            // a) Quà vàng (trừ trực tiếp)
+            // LƯU Ý: ngưỡng giá tính theo giá gốc ALL-IN (VAT+KPBT) TRƯỚC chiết khấu
+            if (promoGoldGift) {
+                const goldVal = document.getElementById('goldGiftCount').value;
+                let goldLabel = '🥇 Quà tặng Vàng';
+                if (goldVal !== 'auto') {
+                    const count = parseInt(goldVal, 10);
+                    gVnd = count * 15_000_000;
+                    goldLabel = `🥇 Quà tặng Vàng (${count} chỉ)`;
+                } else {
+                    // Tính giá gốc all-in (gồm VAT + KPBT) để xác định ngưỡng
+                    const origPA = breakdownPrice(apt.priceBeforeVat - p_const, apt.dtDat, apt.dtXay, apt.type, tienSDĐ, fixedKpbt);
+                    const origAllin = origPA.allin;
+                    const gMap = (apt.type === 'finished') ? SP.promotions.goldGift.finished : SP.promotions.goldGift.roughAndGianXay;
+                    let gift;
+                    if (origAllin >= 20e9) {
+                        gift = gMap.over20b;
+                        goldLabel = `🥇 Quà tặng Vàng (${gift.chi} chỉ – căn từ 20 tỷ)`;
+                    } else if (origAllin >= 10e9) {
+                        gift = gMap.from10to20b;
+                        goldLabel = `🥇 Quà tặng Vàng (${gift.chi} chỉ – căn 10–20 tỷ)`;
+                    } else {
+                        gift = gMap.under10b;
+                        goldLabel = `🥇 Quà tặng Vàng (${gift.chi} chỉ – căn dưới 10 tỷ)`;
+                    }
+                    gVnd = gift.vnd;
+                }
+                currentLandPrice -= gVnd;
+                totalCkVnd += gVnd;
+                ckDetails.push({ label: goldLabel, pct: 0, vnd: gVnd });
+            }
+
+            // b) Chiết khấu % (tính lùi nối tiếp)
+            const ckPctList = [];
+            if (paymentMethod === 'own-early') {
+                // Thanh toán sớm toàn bộ trong 15 ngày: CK cao (18%/22.5%)
+                const pct = SP.ownCapital.earlyPayment[apt.type] || 18.0;
+                ckPctList.push({ label: `Thanh toán sớm – Vốn tự có (${typeLabel})`, pct });
+            } else if (paymentMethod === 'own-normal') {
+                // Tiến độ thường: CK 2%
+                ckPctList.push({ label: 'Chiết khấu tiến độ thường (Vốn tự có)', pct: SP.ownCapital.normalProgress });
+            } else {
+                // Vay NH
+                ckPctList.push({ label: 'Chiết khấu tiến độ thường (vay NH)', pct: SP.ownCapital.normalProgress });
+                const plans = (apt.type === 'finished') ? SP.interestSupport.finished : SP.interestSupport.roughAndGianXay;
+                const plan = plans[supportPlanIdx];
+                if (plan && plan.extraDiscount > 0) {
+                    ckPctList.push({ label: `CK bổ sung – ${plan.label}`, pct: plan.extraDiscount });
+                }
+            }
+            if (vinClubRank !== 'none' && SP.promotions.vinClub[vinClubRank]) {
+                ckPctList.push({ label: `VinClub ${vinClubRank}`, pct: SP.promotions.vinClub[vinClubRank] });
+            }
+            if (promoBirthday33) {
+                ckPctList.push({ label: `🎂 Sinh nhật 33 VGR – ${birthday33Rank}`, pct: SP.promotions.birthday33[birthday33Rank] || 0 });
+            }
+
+            for (const c of ckPctList) {
+                if (c.pct > 0) {
+                    const ckAmt = Math.round(currentLandPrice * (c.pct / 100));
+                    currentLandPrice -= ckAmt;
+                    totalCkVnd += ckAmt;
+                    ckDetails.push({ label: c.label, pct: c.pct, vnd: ckAmt });
+                }
+            }
+
+            if (promoNoBlnh) {
+                // Từ chối BLNH 0.5% apply after all above discounts
+                const noBlnhPct = 0.5;
+                const ckAmt = Math.round(currentLandPrice * (noBlnhPct / 100));
+                currentLandPrice -= ckAmt;
+                totalCkVnd += ckAmt;
+                ckDetails.push({ label: '🛡️ Từ chối bảo lãnh ngân hàng', pct: noBlnhPct, vnd: ckAmt });
+            }
+
+            if (promoEarlyMoveIn && apt.type !== 'gianXay') {
+                // Về ở sớm 5% (Tính trên giá đã trừ CK thanh toán, BLNH, Vinclub... nhưng KHÔNG TRỪ Vàng)
+                const baseEarlyMoveIn = currentLandPrice + gVnd;
+                const ckAmt = Math.round(baseEarlyMoveIn * (SP.promotions.earlyMoveIn / 100));
+                currentLandPrice -= ckAmt;
+                totalCkVnd += ckAmt;
+                ckDetails.push({ label: '🏠 Cam kết về ở sớm', pct: SP.promotions.earlyMoveIn, vnd: ckAmt });
+            }
+
+            if (promoVoucher && voucherAmount > 0) {
+                const maxV = apt.priceBeforeVat * SP.promotions.voucher.maxPercent / 100;
+                const applied = Math.min(voucherAmount, maxV);
+                totalCkVnd += applied;
+                ckDetails.push({ label: `🎟️ Voucher mua nhà (tối đa 30% = ${fmt(maxV)})`, pct: 0, vnd: applied });
+                // NOTE: Voucher is usually subtracted at the end or treated as a payment method, we add it to totalCkVnd but don't reduce currentLandPrice to not affect VAT calculation
+            }
+            if (promoAquafield) {
+                ckDetails.push({ label: '🏊 Quà Aquafield (voucher spa)', pct: 0, vnd: SP.promotions.aquafield });
+            }
+
+            // c) Tính lại bộ giá sau chiết khấu dựa trên currentLandPrice
+            const PA = breakdownPrice(currentLandPrice, apt.dtDat, apt.dtXay, apt.type, tienSDĐ, fixedKpbt);
+
+            /* --- Bước 2: Lịch thanh toán --- */
+            const DEP = SP.paymentSchedule.deposit; // 300tr
+            let stages = [];
+
+            if (apt.type === 'gianXay') {
+                /* --- GIÃN XÂY: Tách 2 dòng tiền Đất & Xây --- */
+                const LT = PA.land_total;  // Tổng tiền đất đã CK (gồm VAT)
+                const CT = PA.const_total; // Tổng tiền xây (gồm VAT, không CK)
+                const KPBT = PA.kpbt;
+
+                // ★ Tiền Đất
+                const L_sign10 = Math.round(LT * 0.10) - DEP;  // 10% - cọc
+                const L_5gua = Math.round(PA.p_land * 0.05); // 5% đảm bảo chưa VAT
+                const L_15 = Math.round(LT * 0.15);
+                const L_bg25 = Math.round(LT * 0.25);
+                const L_vat5 = Math.round((PA.p_land - tienSDĐ) * 0.05 * 0.10); // VAT của 5% (có trừ phần đất)
+
+                stages.push({ no: 1, label: 'Đặt cọc (Đất)', date: startDate, gross: DEP, badge: 'badge-deposit', note: 'Cố định 300 triệu VNĐ' });
+                stages.push({ no: 2, label: 'Ký HĐMB (Đất)', date: startDate, gross: L_sign10 + L_5gua, badge: 'badge-sign', note: '10% (trừ cọc) + 5% đảm bảo chưa VAT' });
+                stages.push({ no: 3, label: 'Đất lần 3 (T+15)', date: addDays(startDate, 15), gross: L_15, badge: 'badge-progress', note: '15% Đất (gồm VAT)' });
+                stages.push({ no: 4, label: 'Đất lần 4 (T+60)', date: addDays(startDate, 60), gross: L_15, badge: 'badge-progress', note: '15% Đất (gồm VAT)' });
+                stages.push({ no: 5, label: 'Đất lần 5 (T+120)', date: addDays(startDate, 120), gross: L_15, badge: 'badge-progress', note: '15% Đất (gồm VAT)' });
+                stages.push({ no: 6, label: 'Đất lần 6 (T+180)', date: addDays(startDate, 180), gross: L_15, badge: 'badge-progress', note: '15% Đất (gồm VAT)' });
+                stages.push({ no: 7, label: 'Thông báo CĐT (Đất)', date: addDays(startDate, 270), gross: L_bg25 + L_vat5, badge: 'badge-handover', note: '25% Đất + VAT của 5% đảm bảo' });
+
+                // ★ Tiền Xây (bắt đầu từ T+540)
+                const X_d0 = addDays(startDate, 540);
+                const X_15 = Math.round(CT * 0.15);
+                const X_5gua = Math.round(PA.p_const * 0.05);
+                const X_vat5 = Math.round(PA.p_const * 0.05 * 0.10);
+                const X_bg25 = Math.round(CT * 0.25);
+
+                stages.push({ no: 8, label: 'Bắt đầu Xây (T+540)', date: X_d0, gross: X_15 + X_5gua, badge: 'badge-progress', note: '15% Xây + 5% đảm bảo chưa VAT' });
+                stages.push({ no: 9, label: 'Xây T+555', date: addDays(startDate, 555), gross: Math.round(CT * 0.10), badge: 'badge-progress', note: '10% Xây' });
+                stages.push({ no: 10, label: 'Xây T+600', date: addDays(startDate, 600), gross: X_15, badge: 'badge-progress', note: '15% Xây' });
+                stages.push({ no: 11, label: 'Xây T+660', date: addDays(startDate, 660), gross: X_15, badge: 'badge-progress', note: '15% Xây' });
+                stages.push({ no: 12, label: 'Xây T+720', date: addDays(startDate, 720), gross: X_15, badge: 'badge-progress', note: '15% Xây' });
+                stages.push({ no: 13, label: 'Bàn giao nhà', date: handoverDate, gross: X_bg25 + X_vat5 + KPBT, badge: 'badge-handover', note: '25% Xây + VAT 5% + KPBT' });
+                stages.push({ no: 14, label: 'Sổ hồng', date: pinkBookDate, gross: 0, badge: 'badge-pink', note: '5% đảm bảo đã trả ở đợt 2 & 8' });
+
+            } else {
+                /* --- THÔ / HOÀN THIỆN --- */
+                const FV_no_kpbt = PA.p_land + PA.vat_land; // Tổng giá gồm VAT NHƯNG KHÔNG CÓ KPBT
+                const P_nd = PA.p_land; // Giá chưa VAT sau CK
+                const sign5gua = Math.round(P_nd * 0.05); // 5% đảm bảo chưa VAT
+                const sign10 = Math.round(FV_no_kpbt * 0.10) - DEP; // 10% (trừ cọc)
+                const prog15 = Math.round(FV_no_kpbt * 0.15);
+                const bg25 = Math.round(FV_no_kpbt * 0.25);
+                const vat5 = Math.round((P_nd - tienSDĐ) * 0.05 * 0.10); // VAT của 5% (phải trừ tỷ lệ tiền sử dụng đất)
+                const kpbt = PA.kpbt;
+
+                if (paymentMethod === 'own-early' || paymentMethod === 'own-normal') {
+                    // Cả 2 chế độ vốn tự có đều có cùng lịch thanh toán 8 đợt
+                    // Chỉ khác nhau ở mức chiết khấu (đã tính ở Bước 1)
+                    stages.push({ no: 1, label: 'Đặt cọc', date: startDate, gross: DEP, badge: 'badge-deposit', note: 'Cố định 300 triệu VNĐ' });
+                    stages.push({ no: 2, label: 'Ký HĐMB', date: startDate, gross: sign10 + sign5gua, badge: 'badge-sign', note: '10% (trừ cọc) + 5% đảm bảo chưa VAT' });
+                    stages.push({ no: 3, label: 'Lần 3 (T+15)', date: addDays(startDate, 15), gross: prog15, badge: 'badge-progress', note: '15% giá trị' });
+                    stages.push({ no: 4, label: 'Lần 4 (T+60)', date: addDays(startDate, 60), gross: prog15, badge: 'badge-progress', note: '15% giá trị' });
+                    stages.push({ no: 5, label: 'Lần 5 (T+120)', date: addDays(startDate, 120), gross: prog15, badge: 'badge-progress', note: '15% giá trị' });
+                    stages.push({ no: 6, label: 'Lần 6 (T+180)', date: addDays(startDate, 180), gross: prog15, badge: 'badge-progress', note: '15% giá trị' });
+                    stages.push({ no: 7, label: 'Nhận bàn giao', date: handoverDate, gross: bg25 + vat5 + kpbt, badge: 'badge-handover', note: '25% + VAT 5% đảm bảo + KPBT' });
+                    stages.push({ no: 8, label: 'Sổ hồng', date: pinkBookDate, gross: 0, badge: 'badge-pink', note: '5% đảm bảo đã thanh toán ở đợt 2' });
+                } else {
+                    const bankAmt = Math.round(FV_no_kpbt * (loanPct / 100));
+                    const selfTotal = FV_no_kpbt - bankAmt;
+                    const self15 = Math.round(FV_no_kpbt * 0.15); // Đợt 2 KH tự đóng 15% (gồm cọc)
+                    const selfRemaining = selfTotal - self15;     // Đợt 3 KH tự đóng phần còn lại
+
+                    stages.push({ no: 1, label: 'Đặt cọc', date: startDate, gross: DEP, badge: 'badge-deposit', note: 'Cố định 300 triệu VNĐ' });
+                    stages.push({ no: 2, label: 'Ký HĐMB', date: startDate, gross: self15 - DEP, badge: 'badge-sign', note: '15% (trừ cọc)' });
+
+                    if (selfRemaining > 0) {
+                        stages.push({ no: 3, label: 'Vốn tự có thêm (T+15)', date: addDays(startDate, 15), gross: selfRemaining, badge: 'badge-progress', note: `${100 - loanPct - 15}% phần tự có còn lại` });
+                    }
+                    stages.push({ no: 4, label: 'Ngân hàng giải ngân (T+30)', date: addDays(startDate, 30), gross: bankAmt, badge: 'badge-bank', note: `${loanPct}% – NH thanh toán trực tiếp CĐT` });
+                    stages.push({ no: 5, label: 'Nhận bàn giao + KPBT', date: handoverDate, gross: kpbt, badge: 'badge-handover', note: 'KPBT 2%' });
+                    stages.push({ no: 6, label: 'Sổ hồng', date: pinkBookDate, gross: 0, badge: 'badge-pink', note: '5% đảm bảo đã thanh toán ở đợt 2' });
+                }
+            }
+
+            // Set net = gross (no further discount allocation per stage; total discount shown separately)
+            stages.forEach(s => { s.ck = 0; s.net = s.gross; });
+
+            /* --- Bước 3: Chiết khấu dòng tiền --- */
+            let cfDiscount = 0, cfDetailsStr = [];
+            if (useCashFlow) {
+                stages.forEach(s => {
+                    if (s.net > 0 && !s.label.includes('Ngân hàng') && s.date > actualPaymentDate) {
+                        const daysEarly = Math.floor((s.date - actualPaymentDate) / 86400000);
+                        if (daysEarly >= 7) {
+                            const ck = s.net * (SP.cashFlowDiscountRate / 100) * (daysEarly / 365);
+                            cfDiscount += ck;
+                            cfDetailsStr.push(`Đợt ${s.no} (${daysEarly} ngày)`);
+                        }
+                    }
+                });
+            }
+
+            /* --- Bước 4: Tổng hợp --- */
+            const totalGross = stages.reduce((a, s) => a + s.gross, 0);
+            const totalCkAll = totalCkVnd + cfDiscount;
+            const totalKHtoCDT = stages.reduce((a, s) => {
+                if (s.label.includes('Ngân hàng giải ngân')) return a;
+                return a + s.net;
+            }, 0) - cfDiscount;
+
+            let loanData = null;
+            if (paymentMethod === 'bank' && showBankSim) {
+                const bankAmt = Math.round(PA.allin * (loanPct / 100)); // The real calculation on PA.allin or FV_no_kpbt?
+                // Wait, the loan amount is based on FV_no_kpbt!
+                const actualBankAmt = Math.round((PA.p_land + PA.vat_land) * (loanPct / 100));
+                const plans = (apt.type === 'finished') ? SP.interestSupport.finished : SP.interestSupport.roughAndGianXay;
+                loanData = calcLoan(actualBankAmt, interestRate, loanTermYears, plans[supportPlanIdx], addDays(startDate, 30));
+            }
+
+            const totalKHtoBank = loanData ? loanData.totalKHPays : 0;
+            const grandTotal = totalKHtoCDT + totalKHtoBank;
+
+            const ckPct = ckPctList.reduce((a, c) => a + c.pct, 0);
+            renderResult(stages, ckDetails, {
+                propValue: apt.priceBeforeVat, typeLabel, paymentMethod,
+                ckPct, ckVnd: totalCkVnd,
+                totalCk: totalCkVnd, totalCkAll, cfDiscount, actualPaymentDate, cfDetailsStr,
+                totalGross, totalKHtoCDT, totalKHtoBank, grandTotal, loanData, showBankSim, PA
+            });
+
+            showTab('result');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+    </script>
+</body>
+
+</html>
